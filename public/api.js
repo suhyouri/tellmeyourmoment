@@ -13,7 +13,11 @@ export function createApi(scriptUrl, fetchRequest = fetch) {
     if (!response.ok) throw new Error('서버 연결에 실패했습니다. 다시 시도해주세요.');
 
     const result = await response.json();
-    if (!result.success) throw new Error(result.error || '요청에 실패했습니다.');
+    if (!result.success) {
+      const error = new Error(result.error || '요청에 실패했습니다.');
+      error.code = result.code;
+      throw error;
+    }
     return result;
   }
 
@@ -22,6 +26,9 @@ export function createApi(scriptUrl, fetchRequest = fetch) {
       const result = await request({ action: 'getAnswers', side });
       if (!Array.isArray(result.data)) throw new Error('답변 목록 형식을 확인해주세요.');
       return result.data;
+    },
+    async getChallenge(side, clientId) {
+      return request({ action: 'getChallenge', side, clientId });
     },
     addAnswer(side, answer) {
       return request({ action: 'addAnswer', side, ...answer }, 'POST');
