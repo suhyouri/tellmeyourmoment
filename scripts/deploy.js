@@ -6,4 +6,7 @@ if (git('status', '--porcelain', '--', 'public/')) {
 }
 const commit = git('subtree', 'split', '--prefix', 'public', 'HEAD');
 execFileSync('git', ['push', 'origin', `${commit}:refs/heads/gh-pages`], { stdio: 'inherit' });
-console.log('배포 요청 완료: https://suhyouri.github.io/renderTest/');
+const remote = git('remote', 'get-url', 'origin');
+const match = remote.match(/github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?$/);
+const siteUrl = match ? `https://${match[1]}.github.io/${match[2]}/` : remote;
+console.log(`배포 요청 완료: ${siteUrl}`);
