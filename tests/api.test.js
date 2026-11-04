@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createApi } from '../public/api.js';
+import { createApi } from '../api.js';
 
 const endpoint = 'https://example.com/exec';
 const respond = result => async () => ({ ok: true, json: async () => result });
