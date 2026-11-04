@@ -1,6 +1,15 @@
-import { createApi } from './api.js';
+import { createApi } from './api.js?v=antispam-1';
 
 const api = createApi(window.APP_CONFIG.scriptUrl);
+const clientId = (() => {
+  try {
+    const stored = localStorage.getItem('wmlalive-client');
+    if (stored && /^[a-zA-Z0-9-]{16,80}$/.test(stored)) return stored;
+    const id = crypto.randomUUID();
+    localStorage.setItem('wmlalive-client', id);
+    return id;
+  } catch { return crypto.randomUUID(); }
+})();
 
 function renderAnswers(container, answers) {
   const fragment = document.createDocumentFragment();
@@ -61,7 +70,12 @@ function setupPanel(side) {
     button.disabled = true;
     status.textContent = '저장 중…';
     try {
-      await api.addAnswer(side, { ...pending, hp_email: form.elements.hp_email.value });
+      if (!pending.token) {
+        const challenge = await api.getChallenge(side, clientId);
+        pending.token = challenge.token;
+        await new Promise(resolve => setTimeout(resolve, challenge.waitMs));
+      }
+      await api.addAnswer(side, { ...pending, clientId, hp_email: form.elements.hp_email.value });
       pending = null;
       form.reset();
       status.textContent = '저장했습니다.';
@@ -72,6 +86,7 @@ function setupPanel(side) {
         status.textContent = '저장했습니다. 목록은 잠시 후 갱신됩니다.';
       }
     } catch (error) {
+      if (error.code === 'CHALLENGE_EXPIRED') delete pending.token;
       status.textContent = error.name === 'TimeoutError'
         ? '응답이 지연되고 있습니다. 다시 시도해주세요.'
         : error.message;
