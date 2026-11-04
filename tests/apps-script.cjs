@@ -1,0 +1,12 @@
+const vm=require('node:vm'), fs=require('node:fs'), assert=require('node:assert/strict');
+const rows=[['Nickname','Content'],['기존','답변']], cache=new Map();let locked=false;
+const sheet={getLastColumn:()=>2,getRange:()=>({getDisplayValues:()=>[rows[0]]}),getDataRange:()=>({getDisplayValues:()=>rows}),appendRow:r=>rows.push(r)};
+const context={ContentService:{createTextOutput:s=>({setMimeType:()=>JSON.parse(s)}),MimeType:{JSON:'json'}},SpreadsheetApp:{openById:()=>({getSheetByName:()=>sheet}),flush(){}},LockService:{getScriptLock:()=>({waitLock:()=>locked=true,hasLock:()=>locked,releaseLock:()=>locked=false})},CacheService:{getScriptCache:()=>({get:k=>cache.get(k),put:(k,v)=>cache.set(k,v)})}};
+vm.createContext(context);vm.runInContext(fs.readFileSync('apps-script/Code.gs','utf8'),context);
+assert.equal(context.doGet({parameter:{side:'left'}}).data[0].answer,'답변');
+const parameter={action:'addAnswer',side:'right',nickname:'=test',answer:'안녕',requestId:'12345678-1234-1234'};
+assert.equal(context.doPost({parameter}).success,true);assert.equal(rows[2][0],"'=test");assert.equal(locked,false);
+context.doPost({parameter});assert.equal(rows.length,3);
+assert.equal(context.doPost({parameter:{...parameter,side:'bad',requestId:'12345678-1234-5678'}}).success,false);
+assert.equal(context.doPost({parameter:{...parameter,hp_email:'spam'}}).success,false);
+console.log('PASS: read, write, formula safety, deduplication, side validation, honeypot, lock release');

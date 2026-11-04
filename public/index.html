@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WMLAlive Archive</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="styles/style.css?v=original-design-1" />
+  </head>
+  <body>
+    <header>순간에 대해 말해주세요 : WMLAlive Archive</header>
+    <main>
+      <!-- left page -->
+      <div class="leftpage">
+        <div>무언가 살아있다고 느낀 순간은 언제인가요?</div>
+        <div class="answerbox_left" id="answerbox_left"></div>
+        <p id="status-left" role="status" aria-live="polite"></p>
+        <form id="answer-form-left">
+          <input name="hp_email" tabindex="-1" autocomplete="off" hidden />
+          <input id="content_1" name="answer" maxlength="2000" aria-label="답변" placeholder="당신의 답변을 적어주세요." required/>
+          <input id="nickname_1" name="nickname" maxlength="80" aria-label="닉네임" placeholder="닉네임" required/>
+          <button>send</button>
+        </form>
+      </div>
+      <!-- right page -->
+      <div class="rightpage">
+        <div>무언가 죽어있다고 느낀 순간은 언제인가요?</div>
+        <div class="answerbox_right" id="answerbox_right"></div>
+        <p id="status-right" role="status" aria-live="polite"></p>
+        <form id="answer-form-right">
+          <input name="hp_email" tabindex="-1" autocomplete="off" hidden />
+          <input id="content_2" name="answer" maxlength="2000" aria-label="답변" placeholder="당신의 답변을 적어주세요." required />
+          <input id="nickname_2" name="nickname" maxlength="80" aria-label="닉네임" placeholder="닉네임" required />
+          <button>send</button>
+        </form>
+      </div>
+      <!-- footer -->
+      <div class="bottom">© Suh Youri</div>
+    </main>
+    
+    <script src="./config.js?v=7a2a702"></script>
+    <script type="module" src="./script.js?v=refactor-1"></script>
+  </body>
+</html>
